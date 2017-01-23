@@ -26,14 +26,19 @@
 
 #ifndef LedControl_h
 #define LedControl_h
-
+#if defined(__AVR__)
 #include <avr/pgmspace.h>
+#elif defined(ESP8266)
+#include <pgmspace.h>
+#endif
 
 #if (ARDUINO >= 100)
 #include <Arduino.h>
 #else
 #include <WProgram.h>
 #endif
+
+#include <SPI.h>
 
 /*
  * Segments to be switched on for characters and digits on
@@ -57,6 +62,8 @@ const static byte charTable [] PROGMEM  = {
     B01100111,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,
     B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000
 };
+
+const static  SPISettings ledSpiSettings(8000000, MSBFIRST, SPI_MODE0);
 
 class LedControl {
     private :
@@ -85,7 +92,7 @@ class LedControl {
          * csPin		pin for selecting the device 
          * numDevices	maximum number of devices that can be controled
          */
-        LedControl(int dataPin, int clkPin, int csPin, int numDevices=1);
+        LedControl(int csPin, int numDevices=1);
 
         /*
          * Gets the number of devices attached to this LedControl.
